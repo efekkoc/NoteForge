@@ -1,7 +1,30 @@
 {
   "name": "noteforge",
   "version": "1.0.0",
-  "private": true,
+  "description": "⚡ Next-Gen AI Lecture Note Digitizer, Multimodal LaTeX OCR & Autonomous Course Vault",
+  "homepage": "https://noteforge-tawny-two.vercel.app",
+  "author": "Turgut Efekan Koç (https://github.com/efekkoc)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/efekkoc/NoteForge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/efekkoc/NoteForge/issues"
+  },
+  "keywords": [
+    "ai",
+    "gemini",
+    "ocr",
+    "latex",
+    "math-ocr",
+    "lecture-notes",
+    "nextjs16",
+    "tailwind-v4",
+    "aquaforge",
+    "pwa",
+    "study-assistant"
+  ],
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
