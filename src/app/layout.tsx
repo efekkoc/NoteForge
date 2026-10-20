@@ -1,12 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  themeColor: "#090d16",
+};
 
 export const metadata: Metadata = {
   title: "NoteForge AI - Akıllı Ders Notu Kütüphanesi & Özetleyici",
   description:
     "Tahta ve el yazısı fotoğraflarını yapay zeka ile metne dönüştürün, özetleyin ve ders bazında düzenleyin.",
   manifest: "/manifest.json",
-  themeColor: "#090d16",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

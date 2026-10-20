@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://noteforge-tawny-two.vercel.app"><img src="https://img.shields.io/badge/Live_Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" /></a>
   <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js_16-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" /></a>
-  <a href="https://ai.google.dev"><img src="https://img.shields.io/badge/Gemini_2.5_Flash-Vision_AI-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Gemini AI" /></a>
+  <a href="https://ai.google.dev"><img src="https://img.shields.io/badge/Gemini_3.8_Flash-Vision_AI-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Gemini AI" /></a>
   <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" /></a>
   <a href="https://github.com/efekkoc/NoteForge/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-00f0ff?style=for-the-badge" alt="License" /></a>
 </p>
@@ -33,7 +33,7 @@ Experience the live app right now without installing anything:
 
 **NoteForge AI** transforms handwritten notebook pages, whiteboard math, chalkboard equations, and lecture slides into a structured, searchable, and intelligent digital library.
 
-Powered by Google's latest **Gemini 2.5 Flash Vision Multimodal API**, NoteForge transcribes complex formulas directly into clean $LaTeX$ formatting, generates executive summaries, predicts high-probability exam questions, and automatically routes notes into dedicated course categories.
+Powered by Google's latest **Gemini 3.8 Flash Vision Multimodal API**, NoteForge transcribes complex formulas directly into clean $LaTeX$ formatting, generates executive summaries, predicts high-probability exam questions, and automatically routes notes into dedicated course categories.
 
 ---
 
@@ -75,7 +75,7 @@ You can automate photo capture directly from your lock screen using the iOS Shor
 | **Framework** | [Next.js 16](https://nextjs.org/) (App Router, Webpack) |
 | **Language** | [TypeScript](https://www.typescriptlang.org/) |
 | **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) with PostCSS & AquaForge Theme |
-| **AI Model** | [Google Gemini 2.5 Flash](https://ai.google.dev/) via `@google/genai` |
+| **AI Model** | [Google Gemini 3.8 Flash](https://ai.google.dev/) via `@google/genai` |
 | **Icons** | [Lucide React](https://lucide.dev/) |
 | **Hosting** | [Vercel](https://vercel.com/) (Edge-ready, 24/7 global uptime) |
 | **Storage** | Client-side `localStorage` (Privacy-first) |

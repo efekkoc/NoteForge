@@ -43,6 +43,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    let detectedMime = mimeType || "image/jpeg";
+    const mimeMatch = imageBase64.match(/^data:(image\/[a-zA-Z0-9+.-]+);base64,/);
+    if (mimeMatch) {
+      detectedMime = mimeMatch[1];
+    }
     const cleanBase64 = imageBase64.replace(/^data:image\/[a-zA-Z0-9+.-]+;base64,/, "");
 
     const coursesContext =
@@ -89,28 +94,54 @@ ${customPrompt ? `User custom instruction: ${customPrompt}` : ""}`;
 
     const ai = new GoogleGenAI({ apiKey });
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: [
-        {
-          role: "user",
-          parts: [
+    // Primary model recommended by Google is gemini-3.8-flash, with automatic fallback
+    const candidateModels = [
+      "gemini-3.8-flash",
+      "gemini-2.5-flash",
+      "gemini-2.0-flash",
+      "gemini-1.5-flash",
+    ];
+
+    let response: any = null;
+    let lastError: any = null;
+
+    for (const model of candidateModels) {
+      try {
+        response = await ai.models.generateContent({
+          model,
+          contents: [
             {
-              inlineData: {
-                mimeType: mimeType || "image/jpeg",
-                data: cleanBase64,
-              },
-            },
-            {
-              text: systemPrompt,
+              role: "user",
+              parts: [
+                {
+                  inlineData: {
+                    mimeType: detectedMime,
+                    data: cleanBase64,
+                  },
+                },
+                {
+                  text: systemPrompt,
+                },
+              ],
             },
           ],
-        },
-      ],
-      config: {
-        responseMimeType: "application/json",
-      },
-    });
+          config: {
+            responseMimeType: "application/json",
+          },
+        });
+
+        if (response && response.text) {
+          break; // successfully generated
+        }
+      } catch (err: any) {
+        lastError = err;
+        console.warn(`Model ${model} unavailable, trying fallback...`, err?.message || err);
+      }
+    }
+
+    if (!response || !response.text) {
+      throw lastError || new Error("All candidate Gemini models failed to generate a response.");
+    }
 
     const responseText = response.text || "";
     let parsedResult;
@@ -131,11 +162,22 @@ ${customPrompt ? `User custom instruction: ${customPrompt}` : ""}`;
     });
   } catch (error: any) {
     console.error("Gemini OCR Analysis Error:", error);
+    let errorMessage =
+      error?.message ||
+      "An error occurred while analyzing the image. Please verify your Gemini API key.";
+
+    try {
+      const parsed = typeof errorMessage === "string" ? JSON.parse(errorMessage) : errorMessage;
+      if (parsed?.error?.message) {
+        errorMessage = parsed.error.message;
+      }
+    } catch {
+      // not JSON string
+    }
+
     return NextResponse.json(
       {
-        error:
-          error?.message ||
-          "An error occurred while analyzing the image. Please verify your Gemini API key.",
+        error: errorMessage,
       },
       { status: 500 }
     );
