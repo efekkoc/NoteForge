@@ -1,6 +1,6 @@
 {
-  "name": "ders-notu-asistani",
-  "version": "0.1.0",
+  "name": "noteforge",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
