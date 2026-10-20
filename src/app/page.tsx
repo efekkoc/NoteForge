@@ -6,8 +6,6 @@ import {
   Camera,
   Plus,
   Zap,
-  Sparkles,
-  FileQuestion,
   HelpCircle,
 } from "lucide-react";
 import { Course, Note } from "@/types";
@@ -82,7 +80,7 @@ export default function Home() {
   };
 
   const handleSaveNewNote = (newNote: Note, suggestedCourseName?: string) => {
-    let targetNote = { ...newNote };
+    const targetNote = { ...newNote };
 
     if (suggestedCourseName) {
       const existing = courses.find(

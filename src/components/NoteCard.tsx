@@ -4,10 +4,8 @@ import React from "react";
 import {
   Calendar,
   Star,
-  Sparkles,
   ChevronRight,
   Trash2,
-  Tag,
   CheckCircle2,
   FileText,
   Image as ImageIcon,

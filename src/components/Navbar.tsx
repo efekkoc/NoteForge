@@ -5,7 +5,6 @@ import {
   Camera,
   Plus,
   Settings,
-  Zap,
   Sparkles,
   KeyRound,
   HelpCircle,
