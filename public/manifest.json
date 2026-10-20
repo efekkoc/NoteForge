@@ -1,0 +1,21 @@
+{
+  "name": "NoteForge AI",
+  "short_name": "NoteForge",
+  "description": "Yapay Zeka Destekli Akıllı Ders Notu Asistanı",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#06b6d4",
+  "icons": [
+    {
+      "src": "/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
