@@ -92,22 +92,67 @@ Strict Rules:
 - Handle messy or partially erased handwriting by inferring academic context accurately.
 ${customPrompt ? `User custom instruction: ${customPrompt}` : ""}`;
 
+    // 1. Discover models actually available for this specific API key
+    let candidateModels: string[] = [];
+    try {
+      const listRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`
+      );
+      if (listRes.ok) {
+        const listData = await listRes.json();
+        if (Array.isArray(listData.models)) {
+          const validModels = listData.models
+            .filter((m: any) =>
+              m.supportedGenerationMethods?.includes("generateContent")
+            )
+            .map((m: any) => m.name.replace(/^models\//, ""));
+
+          validModels.sort((a: string, b: string) => {
+            const getScore = (name: string) => {
+              if (name.includes("2.0-flash")) return 10;
+              if (name.includes("1.5-flash")) return 8;
+              if (name.includes("flash")) return 6;
+              if (name.includes("pro")) return 4;
+              return 1;
+            };
+            return getScore(b) - getScore(a);
+          });
+
+          if (validModels.length > 0) {
+            candidateModels = validModels;
+          }
+        }
+      } else {
+        const errJson = await listRes.json().catch(() => ({}));
+        if (errJson?.error?.message) {
+          throw new Error(errJson.error.message);
+        }
+      }
+    } catch (e: any) {
+      console.warn("Model discovery note:", e?.message);
+      if (e?.message?.includes("API key") || e?.message?.includes("Generative Language API")) {
+        throw e;
+      }
+    }
+
+    if (candidateModels.length === 0) {
+      candidateModels = [
+        "gemini-2.0-flash",
+        "gemini-1.5-flash-latest",
+        "gemini-1.5-flash",
+        "gemini-1.5-pro",
+        "gemini-1.5-flash-8b",
+      ];
+    }
+
     const ai = new GoogleGenAI({ apiKey });
-
-    // Primary model recommended by Google is gemini-3.8-flash, with automatic fallback
-    const candidateModels = [
-      "gemini-3.8-flash",
-      "gemini-2.5-flash",
-      "gemini-2.0-flash",
-      "gemini-1.5-flash",
-    ];
-
-    let response: any = null;
+    let responseText = "";
     let lastError: any = null;
 
     for (const model of candidateModels) {
       try {
-        response = await ai.models.generateContent({
+        // Try SDK first
+        const sdkResponse = await ai.models.generateContent({
           model,
           contents: [
             {
@@ -130,20 +175,59 @@ ${customPrompt ? `User custom instruction: ${customPrompt}` : ""}`;
           },
         });
 
-        if (response && response.text) {
-          break; // successfully generated
+        if (sdkResponse && sdkResponse.text) {
+          responseText = sdkResponse.text;
+          break;
         }
       } catch (err: any) {
         lastError = err;
-        console.warn(`Model ${model} unavailable, trying fallback...`, err?.message || err);
+        // Try direct REST fallback for this model
+        try {
+          const restRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                contents: [
+                  {
+                    parts: [
+                      {
+                        inline_data: {
+                          mime_type: detectedMime,
+                          data: cleanBase64,
+                        },
+                      },
+                      {
+                        text: systemPrompt,
+                      },
+                    ],
+                  },
+                ],
+                generationConfig: {
+                  response_mime_type: "application/json",
+                },
+              }),
+            }
+          );
+
+          if (restRes.ok) {
+            const restData = await restRes.json();
+            const textPart = restData?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (textPart) {
+              responseText = textPart;
+              break;
+            }
+          }
+        } catch {
+          // continue loop
+        }
       }
     }
 
-    if (!response || !response.text) {
-      throw lastError || new Error("All candidate Gemini models failed to generate a response.");
+    if (!responseText) {
+      throw lastError || new Error("All candidate Gemini models failed to generate a response. Please check your API key permissions.");
     }
-
-    const responseText = response.text || "";
     let parsedResult;
     try {
       parsedResult = JSON.parse(responseText);
